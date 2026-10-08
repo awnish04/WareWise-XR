@@ -168,3 +168,4 @@ WareWiseXR_Final_FullStack_v7/
 ## Scope / security note
 
 This is an academic localhost prototype, not a production identity platform. Passwords are hashed and training access is server-checked, but a real enterprise deployment would additionally require central identity/SSO, TLS, formal role administration, audit retention, backup/recovery, hardened database storage, rate limiting, password recovery and organisational security review.
+# WareWise-XR
