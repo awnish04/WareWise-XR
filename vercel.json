@@ -1,7 +1,4 @@
 {
-  "outputFileTracingIncludes": {
-    "/api/**/*": ["*.html", "database/schema.sql"]
-  },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/employee", "destination": "/api" },
