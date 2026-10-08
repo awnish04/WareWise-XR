@@ -1,16 +1,22 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "server.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "server.js"
-    }
+  "outputFileTracingIncludes": {
+    "/api/**/*": ["*.html", "database/schema.sql"]
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/employee", "destination": "/api" },
+    { "source": "/employee.html", "destination": "/api" },
+    { "source": "/trainee-dashboard", "destination": "/api" },
+    { "source": "/trainee-dashboard.html", "destination": "/api" },
+    { "source": "/admin", "destination": "/api" },
+    { "source": "/admin.html", "destination": "/api" },
+    { "source": "/admin-dashboard", "destination": "/api" },
+    { "source": "/admin-dashboard.html", "destination": "/api" },
+    { "source": "/training", "destination": "/api" },
+    { "source": "/training.html", "destination": "/api" },
+    { "source": "/warehouse-training", "destination": "/api" },
+    { "source": "/warehouse-training.html", "destination": "/api" },
+    { "source": "/health", "destination": "/api" },
+    { "source": "/debug/session", "destination": "/api" }
   ]
 }
-
