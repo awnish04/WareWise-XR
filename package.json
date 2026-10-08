@@ -1,0 +1,19 @@
+{
+  "name": "warewise-xr-local-training",
+  "version": "7.0.0",
+  "private": true,
+  "description": "Localhost WareWise XR employee safety training prototype with admin approval and leaderboard",
+  "scripts": {
+    "start": "node server.js",
+    "migrate": "node database/migrate.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@neon/config": "^1.8.4",
+    "@neon/env": "^1.5.1",
+    "pg": "^8.23.1"
+  }
+}

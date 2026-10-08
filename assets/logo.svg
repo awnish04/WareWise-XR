@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 382 64" role="img" aria-label="WareWise XR">
+  <rect x="2" y="2" width="60" height="60" rx="15" fill="#f6b900"/>
+  <path d="M14 17h9l7 27 7-19h8l7 19 7-27h9L57 49h-9l-7-17-6 17h-9z" fill="#0b1118"/>
+  <text x="77" y="42" font-family="Arial,Helvetica,sans-serif" font-weight="900" font-size="31" fill="#f2f6f9" textLength="185" lengthAdjust="spacingAndGlyphs">WAREWISE</text>
+  <rect x="273" y="15" width="54" height="34" rx="8" fill="#f6b900"/>
+  <text x="286" y="40" font-family="Arial,Helvetica,sans-serif" font-weight="900" font-size="22" fill="#0b1118">XR</text>
+</svg>

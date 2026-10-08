@@ -1,0 +1,18 @@
+WareWise XR — Full Stack Finalisation Build v7
+
+Added on top of the tested v6 warehouse:
+- redesigned secure landing/login interface
+- corrected compact WareWise XR logo
+- employee account registration / access requests
+- separate administrator sign-in
+- mandatory administrator approval before training access
+- protected /training route
+- persistent localhost backend using Node.js built-ins only
+- password hashing and HTTP-only sessions
+- employee dashboard with approval state and training progress
+- administrator dashboard with approvals and participation overview
+- server-backed employee leaderboard
+- employee progress sync from the 3D warehouse
+- historical best score retained when current warehouse progress is reset
+
+Local prototype only. No cloud hosting or external database is required.

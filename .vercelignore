@@ -1,0 +1,9 @@
+.env.local
+.DS_Store
+.git
+.neon
+node_modules
+*.orig.png
+*copy.png
+test_crop.png
+
