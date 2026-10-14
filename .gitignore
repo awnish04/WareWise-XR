@@ -4,3 +4,8 @@ data/store.json.broken-*
 .neon
 .env.local
 node_modules/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
