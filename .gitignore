@@ -9,3 +9,5 @@ node_modules/
 !.env.example
 *.pem
 *.key
+*.orig.png
+*copy.png

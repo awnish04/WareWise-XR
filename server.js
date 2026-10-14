@@ -300,6 +300,7 @@ function serveFile(res, file) {
 
 async function handleApi(req, res, url) {
   const p = url.pathname;
+  const isSecure = req.headers["x-forwarded-proto"] === "https" || !!req.socket?.encrypted;
   try {
 
     // ── GET /api/auth/me ──────────────────────────────────────────────────────
@@ -333,7 +334,7 @@ async function handleApi(req, res, url) {
 
         return json(res, 200,
           { ok: true, user: publicAdmin(a), redirect: "/admin-dashboard" },
-          { "Set-Cookie": cookieFor(token, "admin") });
+          { "Set-Cookie": cookieFor(token, "admin", isSecure) });
       }
 
       // Employee login
@@ -352,7 +353,7 @@ async function handleApi(req, res, url) {
 
       return json(res, 200,
         { ok: true, user: publicTrainee(t), redirect: "/trainee-dashboard" },
-        { "Set-Cookie": cookieFor(token, "employee") });
+        { "Set-Cookie": cookieFor(token, "employee", isSecure) });
     }
 
     // ── POST /api/auth/logout ─────────────────────────────────────────────────
@@ -560,9 +561,29 @@ async function handleApi(req, res, url) {
   }
 }
 
-// ── HTTP server ───────────────────────────────────────────────────────────────
+let initPromise = null;
+async function ensureInitialized() {
+  if (!initPromise) {
+    initPromise = (async () => {
+      await databaseReady();
+      await upsertAdmin({
+        email:      ADMIN_EMAIL,
+        password:   ADMIN_PASSWORD,
+        name:       "WareWise Training Admin",
+        department: "Safety & Training",
+      });
+    })();
+  }
+  return initPromise;
+}
 
 const server = http.createServer(async (req, res) => {
+  try {
+    await ensureInitialized();
+  } catch (err) {
+    console.error("Database initialization error:", err.message);
+  }
+
   const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
   if (url.pathname.startsWith("/api/")) return handleApi(req, res, url);
 
@@ -620,26 +641,19 @@ const server = http.createServer(async (req, res) => {
   return serveFile(res, path.join(ROOT, clean));
 });
 
-// ── Boot ──────────────────────────────────────────────────────────────────────
+// ── Boot / Export ─────────────────────────────────────────────────────────────
 
-async function startServer() {
-  await databaseReady();
-  await upsertAdmin({
-    email:      ADMIN_EMAIL,
-    password:   ADMIN_PASSWORD,
-    name:       "WareWise Training Admin",
-    department: "Safety & Training",
-  });
-  // Sessions no longer expire, so no cleanup needed
-
-  server.listen(PORT, HOST, () => {
-    console.log(`\nWareWise XR local server: http://${HOST}:${PORT}`);
-    console.log(`Admin email:   ${ADMIN_EMAIL}`);
-    console.log("Trainee accounts must request access and be approved in the Admin Console.\n");
+if (require.main === module && !process.env.VERCEL) {
+  ensureInitialized().then(() => {
+    server.listen(PORT, HOST, () => {
+      console.log(`\nWareWise XR local server: http://${HOST}:${PORT}`);
+      console.log(`Admin email:   ${ADMIN_EMAIL}`);
+      console.log("Trainee accounts must request access and be approved in the Admin Console.\n");
+    });
+  }).catch((err) => {
+    console.error("Unable to start WareWise XR:", err.message);
+    process.exit(1);
   });
 }
 
-startServer().catch((err) => {
-  console.error("Unable to start WareWise XR:", err.message);
-  process.exit(1);
-});
+module.exports = server;

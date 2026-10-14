@@ -1,6 +1,6 @@
 "use strict";
 
-const test   = require("node:test");
+const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const {
@@ -49,15 +49,17 @@ test("database initialisation is idempotent", async () => {
 
 test("admin upsert stores a real email and verifies password", async () => {
   const admin = await upsertAdmin({
-    email:      "admin@warewise.local",
-    password:   "Admin123!",
-    name:       "WareWise Training Admin",
+    email: "admin@warewise.local",
+    password: "Admin123!",
+    name: "WareWise Training Admin",
     department: "Safety & Training",
   });
   assert.equal(admin.email, "admin@warewise.local");
   assert.ok(admin.password_hash);
 
-  const found = await findAdminByEmail("admin@warewise.local", { includePassword: true });
+  const found = await findAdminByEmail("admin@warewise.local", {
+    includePassword: true,
+  });
   assert.equal(found.email, "admin@warewise.local");
   assert.equal(typeof found.verifyPassword, "function");
   assert.equal(found.verifyPassword("Admin123!"), true);
@@ -66,7 +68,9 @@ test("admin upsert stores a real email and verifies password", async () => {
 
 test("incrementAdminLoginCount updates access_count and last_login_at", async () => {
   const admin = await upsertAdmin({
-    email: "admin@warewise.local", password: "Admin123!", name: "Admin",
+    email: "admin@warewise.local",
+    password: "Admin123!",
+    name: "Admin",
   });
   await incrementAdminLoginCount(admin.id);
   const updated = await findAdminByEmail("admin@warewise.local");
@@ -78,16 +82,16 @@ test("incrementAdminLoginCount updates access_count and last_login_at", async ()
 
 test("trainees, sessions, training progress and leaderboard persist in Postgres", async () => {
   // Use a real-looking email so the DB accepts it
-  const tag   = Date.now();
+  const tag = Date.now();
   const email = `testemployee.${tag}@warewise-test.local`;
 
   // Create trainee
   const trainee = await createTrainee({
-    name:       "Test Employee",
+    name: "Test Employee",
     email,
     department: "Safety",
-    password:   "StrongPassword123!",
-    status:     "pending",
+    password: "StrongPassword123!",
+    status: "pending",
   });
   assert.equal(trainee.email, email);
   assert.equal(trainee.status, "pending");
@@ -122,10 +126,16 @@ test("trainees, sessions, training progress and leaderboard persist in Postgres"
   // Training progress
   await startTraining(trainee.id);
   await saveTrainingProgress(trainee.id, {
-    score:      95,
-    hazards:    ["missing PPE"],
-    moduleDone: { manual: true, height: false, hazards: true,
-                  unsafe: false, why: false, cyber: false },
+    score: 95,
+    hazards: ["missing PPE"],
+    moduleDone: {
+      manual: true,
+      height: false,
+      hazards: true,
+      unsafe: false,
+      why: false,
+      cyber: false,
+    },
     unsafeActs: ["unsafe ladder use"],
   });
 
@@ -138,15 +148,23 @@ test("trainees, sessions, training progress and leaderboard persist in Postgres"
 
   // Approve and check leaderboard
   const admin = await upsertAdmin({
-    email: "admin@warewise.local", password: "Admin123!", name: "Admin",
+    email: "admin@warewise.local",
+    password: "Admin123!",
+    name: "Admin",
   });
   await setTraineeStatus(trainee.id, "approved", admin.id);
 
   // Re-save progress so the leaderboard snapshot gets refreshed
   await saveTrainingProgress(trainee.id, {
-    score:      95,
-    moduleDone: { manual: true, height: false, hazards: true,
-                  unsafe: false, why: false, cyber: false },
+    score: 95,
+    moduleDone: {
+      manual: true,
+      height: false,
+      hazards: true,
+      unsafe: false,
+      why: false,
+      cyber: false,
+    },
   });
 
   const lb = await getLeaderboard();
@@ -154,19 +172,23 @@ test("trainees, sessions, training progress and leaderboard persist in Postgres"
 
   // Access event
   await recordAccessEvent(
-    { id: trainee.id, email, role: "employee" }, "login", { ip: "127.0.0.1" }
+    { id: trainee.id, email, role: "employee" },
+    "login",
+    { ip: "127.0.0.1" },
   );
 
   // Admin overview
   const overview = await getAdminOverview();
-  assert.ok(overview.counts && typeof overview.counts.approved === "string" ||
-            typeof overview.counts.approved === "number");
+  assert.ok(
+    (overview.counts && typeof overview.counts.approved === "string") ||
+      typeof overview.counts.approved === "number",
+  );
 
   // Reset progress (keep history)
   await resetTrainingProgress(trainee.id, { keep_history: true });
   const reset = await getTrainingProgress(trainee.id);
-  assert.equal(reset.best_score, 95);   // history kept
-  assert.equal(reset.attempts,   1);    // history kept
+  assert.equal(reset.best_score, 95); // history kept
+  assert.equal(reset.attempts, 1); // history kept
   assert.equal(reset.current_state.score, 0); // live state cleared
 
   // Login counter
@@ -180,7 +202,9 @@ test("trainees, sessions, training progress and leaderboard persist in Postgres"
 
 test("admin session resolves to role=admin", async () => {
   const admin = await upsertAdmin({
-    email: "admin@warewise.local", password: "Admin123!", name: "Admin",
+    email: "admin@warewise.local",
+    password: "Admin123!",
+    name: "Admin",
   });
   const token = `admin-session-${Date.now()}`;
   await createSession({ adminId: admin.id }, token);
