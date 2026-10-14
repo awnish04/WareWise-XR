@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#08111a" />
+  <title>WareWise XR | Admin Console</title>
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="css/portal.css" />
+  <script src="js/browser-compat.js"></script>
+</head>
+<body class="page-shell">
+<nav class="app-nav"><div class="app-nav-inner">
+  <a class="portal-brand" href="/admin"><img src="assets/logo.svg" alt="WareWise XR" /></a><span class="nav-context">Training administration</span><span class="nav-spacer"></span>
+  <div class="user-menu"><div class="user-copy"><b id="navName">Administrator</b><small>Local training console</small></div><div class="avatar" id="avatar">A</div><button class="secondary" id="refreshBtn">Refresh</button><button class="secondary" id="logoutBtn">Sign out</button></div>
+</div></nav>
+<main class="page-main">
+  <header class="page-head"><div><span class="eyebrow">Administrator console</span><h1>Employee training access</h1><p>Approve employee requests, review participation and monitor verified WareWise XR training scores. This console is intentionally simple for day-to-day trainer use.</p></div></header>
+  <section class="admin-metrics"><div class="admin-metric"><span>Pending requests</span><b id="countPending">0</b></div><div class="admin-metric"><span>Approved employees</span><b id="countApproved">0</b></div><div class="admin-metric"><span>Employees played</span><b id="countPlayed">0</b></div><div class="admin-metric"><span>100% completed</span><b id="countCompleted">0</b></div></section>
+  <div class="admin-grid">
+    <div>
+      <section class="panel"><div class="panel-head"><div><h2>Access requests</h2><p>Employees remain unable to enter the warehouse until an administrator approves them.</p></div></div><div id="requestList" class="request-list"></div></section>
+      <section class="panel section-gap"><div class="panel-head"><div><h2>Employee accounts</h2><p>Current account status and training activity.</p></div></div><div id="employeeTable" class="table-scroll"></div></section>
+    </div>
+    <aside class="panel"><div class="panel-head"><div><h2>Leaderboard</h2><p>Employees ranked by highest recorded training score.</p></div></div><div id="adminLeaderboard"></div><div class="notice section-gap"><b>Local-only prototype.</b> User accounts, approvals and progress are stored in <code>data/store.json</code> on this machine. No external account service is used.</div></aside>
+  </div>
+</main>
+<script src="js/admin.js"></script>
+</body>
+</html>

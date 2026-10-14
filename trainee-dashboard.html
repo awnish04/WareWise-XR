@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#08111a" />
+  <title>WareWise XR | Employee Training</title>
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="css/portal.css" />
+  <script src="js/browser-compat.js"></script>
+</head>
+<body class="page-shell">
+<nav class="app-nav"><div class="app-nav-inner">
+  <a class="portal-brand" href="/employee"><img src="assets/logo.svg" alt="WareWise XR" /></a>
+  <span class="nav-context">Employee training</span><span class="nav-spacer"></span>
+  <div class="user-menu"><div class="user-copy"><b id="navName">Employee</b><small id="navDept">Training account</small></div><div class="avatar" id="avatar">E</div><button class="secondary" id="logoutBtn">Sign out</button></div>
+</div></nav>
+<main class="page-main">
+  <header class="page-head"><div><span class="eyebrow">Employee workspace</span><h1 id="welcomeTitle">Training dashboard</h1><p>Review your access status, continue WareWise XR training and compare verified scores with other approved employees.</p></div></header>
+  <section id="accessBanner" class="access-banner pending"><div class="access-icon" id="accessIcon">…</div><div><h3 id="accessTitle">Checking access…</h3><p id="accessText">Please wait while WareWise verifies your local training account.</p></div><div class="banner-action"><a id="startTop" href="/training" class="primary button-link disabled">Enter warehouse</a></div></section>
+
+  <div class="dashboard-grid">
+    <div>
+      <section class="panel training-hero">
+        <span class="eyebrow">WareWise XR shift</span><h2>Interactive warehouse safety training</h2>
+        <p>Complete manual handling, hazard perception, working at height, unsafe acts, 5 Whys and cyber awareness inside the 3D warehouse.</p>
+        <div class="training-actions"><a id="startTraining" class="primary button-link disabled" href="/training">Start / continue training</a><span class="status-pill" id="trainingStatus">Approval required</span></div>
+        <div class="metric-row"><div class="metric"><span>Best score</span><b id="bestScore">0</b></div><div class="metric"><span>Best completion</span><b id="bestCompletion">0%</b></div><div class="metric"><span>Attempts</span><b id="attempts">0</b></div><div class="metric"><span>Last activity</span><b id="lastPlayed">—</b></div></div>
+        <div class="progress-line"><i id="overallProgress"></i></div>
+      </section>
+
+      <section class="panel section-gap"><div class="panel-head"><div><h2>Current module progress</h2><p>Your current active training state is stored against this employee account.</p></div></div><div id="moduleProgress" class="module-progress"></div></section>
+    </div>
+
+    <aside class="panel"><div class="panel-head"><div><h2>Employee leaderboard</h2><p>Best verified scores from approved employees who have started training.</p></div></div><div id="leaderboardWrap"></div></aside>
+  </div>
+</main>
+<script src="js/employee.js"></script>
+</body>
+</html>

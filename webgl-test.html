@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebGL Diagnostic Test</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #0a0f15;
+      color: #eef4f7;
+    }
+    h1 { color: #f6b900; }
+    .test-result {
+      background: #17222d;
+      border: 1px solid #2a3b49;
+      border-radius: 12px;
+      padding: 16px;
+      margin: 12px 0;
+    }
+    .status { font-weight: bold; margin-bottom: 8px; }
+    .success { color: #54d18f; }
+    .error { color: #ff675f; }
+    .warning { color: #ffd84d; }
+    pre {
+      background: #0d1419;
+      border: 1px solid #354555;
+      border-radius: 8px;
+      padding: 12px;
+      overflow-x: auto;
+      font-size: 12px;
+    }
+    canvas {
+      border: 2px solid #2a3b49;
+      margin: 12px 0;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 WebGL Diagnostic Test</h1>
+  <p>This page tests WebGL support in your browser.</p>
+  
+  <div id="results"></div>
+  
+  <canvas id="testCanvas" width="400" height="300"></canvas>
+  
+  <script>
+    const results = document.getElementById('results');
+    const canvas = document.getElementById('testCanvas');
+    
+    function addResult(title, status, message, details = null) {
+      const div = document.createElement('div');
+      div.className = 'test-result';
+      div.innerHTML = `
+        <div class="status ${status}">${status === 'success' ? '✓' : status === 'error' ? '✗' : '⚠'} ${title}</div>
+        <div>${message}</div>
+        ${details ? `<pre>${details}</pre>` : ''}
+      `;
+      results.appendChild(div);
+    }
+    
+    // Test 1: Browser Detection
+    const ua = navigator.userAgent;
+    let browserName = 'Unknown';
+    if (ua.includes('Safari') && !ua.includes('Chrome')) browserName = 'Safari';
+    else if (ua.includes('Chrome') && !ua.includes('Edg')) browserName = 'Chrome';
+    else if (ua.includes('Firefox')) browserName = 'Firefox';
+    else if (ua.includes('Edg')) browserName = 'Edge';
+    else if (ua.includes('Brave')) browserName = 'Brave';
+    
+    addResult(
+      'Browser Detected',
+      'success',
+      `You are using: ${browserName}`,
+      navigator.userAgent
+    );
+    
+    // Test 2: Canvas Support
+    try {
+      const testCanvas = document.createElement('canvas');
+      addResult(
+        'Canvas API',
+        'success',
+        'Canvas element is supported'
+      );
+    } catch (e) {
+      addResult(
+        'Canvas API',
+        'error',
+        'Canvas element is NOT supported',
+        e.message
+      );
+    }
+    
+    // Test 3: WebGL Context
+    let gl = null;
+    try {
+      gl = canvas.getContext('webgl', {
+        antialias: true,
+        alpha: false,
+        preserveDrawingBuffer: false
+      });
+      
+      if (!gl) {
+        // Try experimental WebGL
+        gl = canvas.getContext('experimental-webgl', {
+          antialias: true,
+          alpha: false,
+          preserveDrawingBuffer: false
+        });
+      }
+      
+      if (gl) {
+        addResult(
+          'WebGL Context',
+          'success',
+          'WebGL context obtained successfully!'
+        );
+      } else {
+        addResult(
+          'WebGL Context',
+          'error',
+          'Failed to get WebGL context',
+          'getContext("webgl") returned null'
+        );
+      }
+    } catch (e) {
+      addResult(
+        'WebGL Context',
+        'error',
+        'Exception when getting WebGL context',
+        e.message + '\n' + e.stack
+      );
+    }
+    
+    // Test 4: WebGL Info
+    if (gl) {
+      try {
+        const vendor = gl.getParameter(gl.VENDOR);
+        const renderer = gl.getParameter(gl.RENDERER);
+        const version = gl.getParameter(gl.VERSION);
+        const shadingLanguageVersion = gl.getParameter(gl.SHADING_LANGUAGE_VERSION);
+        
+        addResult(
+          'WebGL Information',
+          'success',
+          'Successfully retrieved WebGL information',
+          `Vendor: ${vendor}\nRenderer: ${renderer}\nVersion: ${version}\nShading Language: ${shadingLanguageVersion}`
+        );
+      } catch (e) {
+        addResult(
+          'WebGL Information',
+          'warning',
+          'Could not retrieve WebGL info',
+          e.message
+        );
+      }
+      
+      // Test 5: Draw a triangle
+      try {
+        const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+        gl.shaderSource(vertexShader, `
+          attribute vec2 position;
+          void main() {
+            gl_Position = vec4(position, 0.0, 1.0);
+          }
+        `);
+        gl.compileShader(vertexShader);
+        
+        const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+        gl.shaderSource(fragmentShader, `
+          precision mediump float;
+          void main() {
+            gl_FragColor = vec4(0.965, 0.725, 0.0, 1.0);
+          }
+        `);
+        gl.compileShader(fragmentShader);
+        
+        const program = gl.createProgram();
+        gl.attachShader(program, vertexShader);
+        gl.attachShader(program, fragmentShader);
+        gl.linkProgram(program);
+        gl.useProgram(program);
+        
+        const vertices = new Float32Array([
+          0.0,  0.5,
+         -0.5, -0.5,
+          0.5, -0.5
+        ]);
+        
+        const buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+        
+        const position = gl.getAttribLocation(program, 'position');
+        gl.enableVertexAttribArray(position);
+        gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
+        
+        gl.clearColor(0.05, 0.07, 0.09, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        
+        addResult(
+          'WebGL Rendering',
+          'success',
+          'Successfully rendered a triangle! (You should see a yellow triangle above)',
+          'If you see a yellow triangle above, WebGL is working perfectly in your browser.'
+        );
+      } catch (e) {
+        addResult(
+          'WebGL Rendering',
+          'error',
+          'Failed to render test triangle',
+          e.message + '\n' + e.stack
+        );
+      }
+    }
+    
+    // Test 6: Hardware Acceleration Check
+    if (gl) {
+      const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+      if (debugInfo) {
+        const unmaskedVendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+        const unmaskedRenderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+        
+        addResult(
+          'Hardware Acceleration',
+          'success',
+          'Detailed GPU information available',
+          `GPU Vendor: ${unmaskedVendor}\nGPU: ${unmaskedRenderer}`
+        );
+      } else {
+        addResult(
+          'Hardware Acceleration',
+          'warning',
+          'Cannot determine GPU details',
+          'WEBGL_debug_renderer_info extension not available'
+        );
+      }
+    }
+    
+    // Test 7: Safari-Specific Issues
+    if (browserName === 'Safari') {
+      addResult(
+        'Safari-Specific Check',
+        'warning',
+        'You are using Safari. Common issues:',
+        `1. Check Safari > Settings > Advanced > "Show features for web developers"\n2. Check Safari > Settings > Websites > Camera (if using WebXR)\n3. Try enabling "WebGL" in Develop menu\n4. Make sure "Block all cookies" is disabled in Settings > Privacy\n5. Restart Safari if you just changed settings`
+      );
+    }
+    
+    // Test 8: Console output
+    console.log('WebGL Test Results:');
+    console.log('Browser:', browserName);
+    console.log('WebGL Available:', !!gl);
+    if (gl) {
+      console.log('Vendor:', gl.getParameter(gl.VENDOR));
+      console.log('Renderer:', gl.getParameter(gl.RENDERER));
+    }
+    
+    // Summary
+    const summary = document.createElement('div');
+    summary.className = 'test-result';
+    summary.style.marginTop = '24px';
+    summary.style.borderColor = gl ? '#54d18f' : '#ff675f';
+    summary.innerHTML = `
+      <h2 style="margin-top: 0;">${gl ? '✓ WebGL is Working!' : '✗ WebGL is NOT Working'}</h2>
+      <p>${gl 
+        ? 'Your browser supports WebGL. WareWise 3D training should work.' 
+        : 'WebGL is not available. WareWise 3D training will not work in this browser.'
+      }</p>
+    `;
+    results.appendChild(summary);
+  </script>
+</body>
+</html>

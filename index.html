@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#071019" />
+  <title>WareWise XR | Secure Training Access</title>
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="css/portal.css" />
+  <script src="js/browser-compat.js"></script>
+</head>
+<body>
+<div class="portal-shell">
+  <nav class="portal-nav">
+    <a class="portal-brand" href="/" aria-label="WareWise XR home"><img src="assets/logo.svg" alt="WareWise XR" /></a>
+    <span class="platform-pill">Controlled training platform</span>
+  </nav>
+
+  <main class="auth-main">
+    <section class="hero-copy">
+      <span class="eyebrow">Automotive logistics • employee safety</span>
+      <h1>Safety training,<br><span>now accountable.</span></h1>
+      <p>Enter the WareWise XR warehouse, complete interactive safety modules and build a verified training history. Employee access is controlled by your organisation's training administrator.</p>
+      <div class="feature-chips">
+        <span class="feature-chip">Protected employee accounts</span>
+        <span class="feature-chip">3D + WebXR training</span>
+        <span class="feature-chip">Verified leaderboard</span>
+        <span class="feature-chip">Trainer oversight</span>
+      </div>
+    </section>
+
+    <section class="auth-card" aria-labelledby="authTitle">
+      <span class="eyebrow">Secure access</span>
+      <h2 id="authTitle">Welcome back</h2>
+      <p class="card-intro" id="authIntro">Sign in with your WareWise employee account or request access from the training team.</p>
+
+      <div class="role-switch" aria-label="Choose account type">
+        <button class="active" data-role="employee">Employee</button>
+        <button data-role="admin">Administrator</button>
+      </div>
+      <div class="mode-switch" id="modeSwitch">
+        <button class="active" data-mode="signin">Sign in</button>
+        <button data-mode="request">Request access</button>
+      </div>
+
+      <form id="signinForm" class="form-grid" autocomplete="on">
+        <div class="form-row"><label for="loginEmail">Work email</label><input id="loginEmail" name="email" type="email" autocomplete="username" placeholder="employee@company.com" required /></div>
+        <div class="form-row"><label for="loginPassword">Password</label><input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="••••••••" required /></div>
+        <div class="auth-actions"><button class="primary" type="submit">Sign in</button></div>
+      </form>
+
+      <form id="requestForm" class="form-grid hidden" autocomplete="on">
+        <div class="form-row"><label for="requestName">Full name</label><input id="requestName" name="name" autocomplete="name" placeholder="Employee name" required /></div>
+        <div class="form-row"><label for="requestEmail">Work email</label><input id="requestEmail" name="email" type="email" autocomplete="email" placeholder="employee@company.com" required /></div>
+        <div class="form-row"><label for="requestDepartment">Department / team</label><input id="requestDepartment" name="department" placeholder="Warehouse operations" required /></div>
+        <div class="form-row"><label for="requestPassword">Create password</label><input id="requestPassword" name="password" type="password" autocomplete="new-password" placeholder="At least 8 characters" minlength="8" required /></div>
+        <div class="auth-actions"><button class="primary" type="submit">Submit request</button></div>
+      </form>
+
+      <div id="authMessage" class="form-message" aria-live="polite"></div>
+      <div class="auth-note" id="authNote">Authentication alone does not unlock the warehouse. A new employee account must be approved by an administrator before training access becomes available.</div>
+      <div class="dev-note">Local prototype only. Account and training data stay in the project's local data store on this computer.</div>
+    </section>
+  </main>
+  <footer class="login-foot">WareWise XR • SSBA Enterprise • CET257 Enterprise Project prototype</footer>
+</div>
+<script src="js/auth.js"></script>
+</body>
+</html>

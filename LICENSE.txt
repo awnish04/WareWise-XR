@@ -1,0 +1,3 @@
+WareWise XR project code, fictional branding, SVG artwork, interface design and scenario content in this package are provided for educational project use by the recipient.
+
+No third-party JavaScript framework, 3D model, stock photograph, sound library or proprietary company asset is bundled in this project.

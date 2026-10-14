@@ -1,0 +1,6 @@
+data/store.json
+data/store.json.broken-*
+.DS_Store
+.neon
+.env.local
+node_modules/

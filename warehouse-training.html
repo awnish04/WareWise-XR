@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1017" />
+  <title>WareWise XR | Interactive Safety Training Lab</title>
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="css/app.css" />
+  <script src="js/browser-compat.js"></script>
+</head>
+<body>
+  <div id="app">
+    <section id="home" class="screen home-screen active" aria-label="WareWise XR home">
+      <nav class="topbar">
+        <div class="brand"><img src="assets/logo.svg" alt="WareWise XR" /></div>
+        <div class="top-actions">
+          <div class="training-user-chip"><span>EMPLOYEE</span><b id="trainingUserName">Loading…</b></div>
+          <button class="ghost" id="employeeDashBtn">Employee dashboard</button>
+          <button class="ghost" id="resetProgressBtn">Reset current progress</button>
+          <button class="primary" id="launchBtn">Enter 3D Warehouse</button>
+        </div>
+      </nav>
+
+      <main class="home-main">
+        <div class="hero-copy">
+          <span class="eyebrow">AUTOMOTIVE LOGISTICS • SAFETY TRAINING</span>
+          <h1>Train in the warehouse.<br><span>Not on a slide deck.</span></h1>
+          <p>WareWise XR is a fictional, fully interactive safety-training environment. Walk a 3D warehouse, carry loads, identify hazards, practise work-at-height controls, solve root causes and complete cyber-awareness challenges.</p>
+          <div class="hero-actions">
+            <button class="primary large" id="launchBtn2">Start interactive shift</button>
+            <button class="secondary large" id="howBtn">How to play</button>
+          </div>
+          <div class="compatibility">
+            <span>Desktop 3D</span><span>360° free look</span><span>WebXR VR ready</span><span>Verified employee progress</span>
+          </div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="warehouse-card">
+            <div class="card-head"><span>LIVE TRAINING FLOOR</span><b id="homeCompletion">0%</b></div>
+            <div class="mini-map">
+              <div class="aisle a1"></div><div class="aisle a2"></div><div class="aisle a3"></div>
+              <div class="forklift-dot"></div><div class="worker-dot"></div><div class="target-dot"></div>
+            </div>
+            <div class="card-foot"><span>6 modules</span><span>10 hazards</span><span>2-player duel</span></div>
+          </div>
+        </div>
+      </main>
+
+      <section class="module-section">
+        <div class="section-title"><span>Training programme</span><small>Progress is synced to your approved employee account</small></div>
+        <div class="module-grid" id="moduleGrid"></div>
+      </section>
+    </section>
+
+    <section id="sim" class="screen sim-screen" aria-label="3D warehouse simulator">
+      <canvas id="glCanvas" tabindex="0"></canvas>
+      <div id="fallback" class="fallback hidden">
+        <h2>3D rendering is unavailable</h2>
+        <p id="fallbackMessage">This browser did not provide WebGL. Use a modern Chrome, Edge, Firefox or Safari browser with hardware acceleration enabled.</p>
+        <div id="braveWebglHelp" class="fallback-help hidden">
+          <strong>Brave Browser Detected</strong>
+          <p>Brave blocks WebGL by default for privacy. To enable 3D training:</p>
+          <ol>
+            <li>Click the <strong>Brave shield icon</strong> in the address bar</li>
+            <li>Click <strong>"Advanced View"</strong></li>
+            <li>Enable <strong>"WebGL"</strong></li>
+            <li>Refresh this page</li>
+          </ol>
+          <p><small>Or visit <code>brave://settings/shields</code> to enable WebGL globally</small></p>
+        </div>
+        <button class="primary" id="fallbackBack">Back to dashboard</button>
+      </div>
+
+      <div class="hud" id="hud">
+        <div class="hud-top-left glass">
+          <div class="hud-brand"><img src="assets/icon.svg" alt="" /><div><b>WAREWISE XR</b><small>SHIFT 07 • TRAINING MODE</small></div></div>
+          <div class="hud-stat"><span>Score</span><b id="score">0000</b></div>
+          <div class="hud-stat"><span>Hazards</span><b id="hazards">0/10</b></div>
+        </div>
+
+        <div class="hud-top-right">
+          <button class="hud-button reset" id="resetWarehouseBtn" title="Restore the warehouse for a new trainee">Reset warehouse</button>
+          <button class="hud-button" id="vrBtn">VR</button>
+          <button class="hud-button" id="pauseBtn">Menu</button>
+        </div>
+
+        <div class="nav-guide glass" id="navGuide" aria-live="polite">
+          <div class="guide-arrow" id="guideArrow">↑</div>
+          <div><span>NEXT LOCATION</span><b id="guideLabel">Briefing terminal</b><small id="guideDistance">-- m</small></div>
+        </div>
+
+        <aside class="minimap-panel glass" id="minimapPanel" aria-label="Warehouse minimap">
+          <div class="minimap-head"><b>WAREHOUSE MAP</b><span>N ↑</span></div>
+          <canvas id="minimapCanvas" width="240" height="292"></canvas>
+          <div class="minimap-legend"><span><i class="dot player"></i>You</span><span><i class="dot target"></i>Objective</span><span><i class="dot terminal"></i>Training</span><span><i class="dot hazard"></i>Hazard</span></div>
+        </aside>
+
+        <div class="world-label-layer" id="worldLabelLayer" aria-hidden="true"></div>
+
+        <div class="objective-card glass" id="objectiveCard">
+          <span class="eyebrow">CURRENT OBJECTIVE</span>
+          <h3 id="objectiveTitle">Report to the briefing terminal</h3>
+          <p id="objectiveText">Walk to the illuminated terminal and press E to interact.</p>
+          <div class="objective-progress"><i id="objectiveBar"></i></div>
+        </div>
+
+        <div class="interaction-prompt" id="interactionPrompt">
+          <span class="prompt-input" aria-hidden="true"><kbd>E</kbd><small>or</small><kbd>CLICK</kbd></span>
+          <span class="prompt-separator" aria-hidden="true"></span>
+          <span class="prompt-action" id="promptText">INTERACT</span>
+        </div>
+        <div class="crosshair" id="crosshair"><i></i><i></i></div>
+        <div class="toast" id="toast"></div>
+
+        <div class="carry-status glass hidden" id="carryStatus"><span>CARRYING</span><b id="carryLabel">Crate</b><small>G = place/drop • keep route clear</small></div>
+        <div class="ppe-status glass"><span>PPE</span><b id="ppeLabel">Hi-vis ✓ • Boots ✓ • Harness —</b></div>
+
+        <div class="controls-strip glass" id="controlsStrip">
+          <span><kbd>WASD</kbd> Move</span><span><kbd>Mouse</kbd> Look naturally</span><span><kbd>E</kbd> / Click Interact / pick up</span><span><kbd>G</kbd> Drop / place</span><span><kbd>Esc</kbd> Close prompt / release mouse</span>
+        </div>
+      </div>
+
+      <div id="touchControls" class="touch-controls hidden">
+        <div class="touch-pad"><button data-key="KeyW">▲</button><div><button data-key="KeyA">◀</button><button data-key="KeyS">▼</button><button data-key="KeyD">▶</button></div></div>
+        <button class="touch-action" id="touchInteract">INTERACT</button><button class="touch-action" id="touchDrop">DROP</button>
+      </div>
+
+      <div class="modal-layer hidden" id="modalLayer" role="dialog" aria-modal="true">
+        <div class="modal glass" id="modal"></div>
+      </div>
+    </section>
+  </div>
+  <script src="js/training-loader.js"></script>
+</body>
+</html>
